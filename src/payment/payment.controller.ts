@@ -43,19 +43,19 @@ export class PaymentController {
   @Post('webhook')
   async webhook(@Req() req,
   @Headers('stripe-signature') signature: string,) {
-    console.log('Webhook received'); 
+    console.log('Webhook received', req.rawbody); 
 
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
     let event;
 
     try {
       event = this.stripe.webhooks.constructEvent(
-        req.rawbody,
+        req.rawBody,
         signature,
         endpointSecret
       )
 
-      console.log('Webhook recibido:', event.type);
+      console.log('Webhook recibido:', event);
     } catch (error) {
       console.log('error webhook: ', error);
     }
@@ -72,9 +72,7 @@ export class PaymentController {
         amount: paymentIntent.amount_received,
       })
 
-      console.log(
-        `Payment guardado correctamente en la base de datos.`,
-    );
+      console.log(`Payment guardado correctamente en la base de datos.`);
       
     } else if (event.type === 'payment_intent.payment_failed') {
 
